@@ -13,13 +13,30 @@ Services['imdb'] = 'Movies on IMDb.com';
 Services['wikipedia'] = 'Wikipedia';
 Services['amazon'] = 'Amazon';
 Services['maemo'] = 'Maemo.org';
+api_url = 'http://wavespeaker.appspot.com/api/query?&term=';
+
+var Baas = function() {
+    
+    return {
+
+        api_call: function(term) {
+            var request_url = api_url + encodeURI(term)+'&jsoncallback=?';
+            $.getJSON(request_url,'{}',
+                function(data){
+                    console.info(data);
+                }
+            );             
+        }
+    }
+
+}();
 
 var Ziggy = function() {
 
     /* add private vars and functions here */
-    var last_action = '';
-    
-    /* these are widely acessible */
+    var service = '';
+    var term = '';
+
     return {
         
         init: function() {
@@ -31,7 +48,7 @@ var Ziggy = function() {
         },
 
         build_service_form: function() {
-            var service_form = $('<form>').append('<input type="text" name="term" value=""/>');
+            var service_form = $('<form>').append('<input type="text" id="service_input" name="term" value=""/>');
             service_form.append('<input type="submit" value="go" />');
             service_form.submit(Ziggy.ask_buddy)
             $('#service_form').append(service_form);
@@ -44,6 +61,7 @@ var Ziggy = function() {
 
         build_service: function() {
             service = this.name;
+            self.service = service;
             $('#services').hide();   
             $('#service .service_name').text(Services[service]);
             Ziggy.build_service_form();
@@ -65,8 +83,14 @@ var Ziggy = function() {
         },
 
         ask_buddy: function() {
-            $('#service_result').html('<b>suche jetzt</b>');
+            $('#service_result').html('<b>suche jetzt</b>');            
+            self.term = Ziggy.build_term();
+            Baas.api_call(self.term);
             return false;
+        },
+
+        build_term: function () {
+            return self.service+':'+$('#service_input').val();
         }
     }
 }();
