@@ -15,6 +15,7 @@ Services['amazon'] = 'Amazon';
 Services['maemo'] = 'Maemo.org';
 api_url = 'http://wavespeaker.appspot.com/api/query?&term=';
 
+
 var Baas = function() {
     
     return {
@@ -26,6 +27,19 @@ var Baas = function() {
                     console.info(data);
                 }
             );             
+        }
+    }
+
+}();
+
+var ServiceForm = function() {
+
+    return {
+        get: function(service) {
+            var service_form =  $('<form>').append('<input type="text" id="service_input" name="term" value=""/>');
+            service_form.append('<input type="submit" value="go" />');
+            service_form.submit(Ziggy.ask_buddy)
+            return service_form;
         }
     }
 
@@ -48,9 +62,7 @@ var Ziggy = function() {
         },
 
         build_service_form: function() {
-            var service_form = $('<form>').append('<input type="text" id="service_input" name="term" value=""/>');
-            service_form.append('<input type="submit" value="go" />');
-            service_form.submit(Ziggy.ask_buddy)
+            var service_form = ServiceForm.get(service);
             $('#service_form').append(service_form);
         },
 
