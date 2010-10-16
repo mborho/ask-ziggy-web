@@ -1,18 +1,19 @@
 // Copyright 2009 Martin Borho <martin@borho.net>
 // GPL - see License.txt for details
 
-Services = new Object();
-Services['tlate'] = 'Translation';
-Services['weather'] = 'Weather Forecast';
-Services['music'] = 'Yahoo Music';
-Services['gnews'] = 'Google News Search';
-Services['gweb'] = 'Google Web Search';
-Services['deli'] = 'Bookmarks on delicious.com';
-Services['metacritic'] = 'Reviews on metacritic.com';
-Services['imdb'] = 'Movies on IMDb.com';
-Services['wikipedia'] = 'Wikipedia';
-Services['amazon'] = 'Amazon';
-Services['maemo'] = 'Maemo.org';
+Services = {
+        'tlate': {'name':'Translation','active':true},
+        'weather': {'name':'Weather Forecast','active':true,'option':'Language'},
+        'music': {'name':'Yahoo Music','active':true},
+        'gnews': {'name':'Google News','active':true,'option':'Edition'},
+        'gweb': {'name':'Google Search','active':true,'option':'Language'},
+        'deli': {'name':'Delicious.com','active':true},
+        'metacritic': {'name':'Metacritic.com','active':true},
+        'imdb': {'name':'IMDb.com','active':true,'option':'Language'},
+        'wikipedia': {'name':'Wikipedia','active':true,'option':'Language'},
+        'amazon': {'name':'Amazon','active':true,'option':'Language'},
+        'maemo': {'name':'Maemo.org','active':true}
+}
 api_url = 'http://wavespeaker.appspot.com/api/query?&term=';
 
 
@@ -21,6 +22,7 @@ var Baas = function() {
     return {
 
         api_call: function(term) {
+            console.info(term);
             var request_url = api_url + encodeURI(term)+'&jsoncallback=?';
             $.getJSON(request_url,'{}',
                 function(data){
@@ -35,10 +37,35 @@ var Baas = function() {
 var ServiceForm = function() {
 
     return {
-        get: function(service) {
+        tlate_form: function() {
             var service_form =  $('<form>').append('<input type="text" id="service_input" name="term" value=""/>');
             service_form.append('<input type="submit" value="go" />');
             service_form.submit(Ziggy.ask_buddy)
+            return service_form;
+        },
+
+        search_form: function(service) {            
+            var service_form =  $('<form>').append('<input type="text" id="service_input" name="term" value=""/>');
+            var sOptions = ServiceOptions[service];
+            if(sOptions) {
+                service_options = $('<select name="sOption" id="sOption">');
+                // check for a empty default option
+                if(Services[service]['option'] != 'undefined')
+                    service_options.append($('<option>').val('').text(Services[service]['option']));
+                for(o in sOptions) service_options.append($('<option>').val(o).text(sOptions[o]));
+                service_form.append(service_options);
+            }
+            service_form.append('<input type="submit" value="go" />');
+            service_form.submit(Ziggy.ask_buddy)
+            return service_form;
+        },
+
+        get: function(service) {
+            if(service =='tlate') {
+                var service_form = ServiceForm.tlate_form(service);
+            } else {
+                var service_form = ServiceForm.search_form(service);
+            }
             return service_form;
         }
     }
@@ -61,7 +88,7 @@ var Ziggy = function() {
             alert('bal');
         },
 
-        build_service_form: function() {
+        build_service_form: function(service) {
             var service_form = ServiceForm.get(service);
             $('#service_form').append(service_form);
         },
@@ -72,11 +99,11 @@ var Ziggy = function() {
         },
 
         build_service: function() {
-            service = this.name;
+            var service = this.name;
             self.service = service;
             $('#services').hide();   
-            $('#service .service_name').text(Services[service]);
-            Ziggy.build_service_form();
+            $('#service .service_name').text(Services[service]['name']);
+            Ziggy.build_service_form(service);
             $('#service').fadeIn();
         },
         
@@ -88,21 +115,27 @@ var Ziggy = function() {
 
         build_start: function() {            
             for(s in Services) {
-                var link = $('<a name="'+s+'" href="#">'+Services[s]+'</a>').click(Ziggy.build_service);
-                var li = $('<li>').append(link);    
-                $('#services_list').append(li);   
+                if(Services[s]['active']) {
+                    var link = $('<a name="'+s+'" href="#">'+Services[s]['name']+'</a>').click(Ziggy.build_service);
+                    var li = $('<li>').append(link);    
+                    $('#services_list').append(li);
+                }
             }
         },
 
         ask_buddy: function() {
             $('#service_result').html('<b>suche jetzt</b>');            
-            self.term = Ziggy.build_term();
+            self.term = Ziggy.build_term();            
             Baas.api_call(self.term);
             return false;
         },
 
-        build_term: function () {
-            return self.service+':'+$('#service_input').val();
+        build_term: function () {            
+            var term = self.service+':'+$('#service_input').val();
+            var service_option = $('#sOption').val();
+            if(service_option)
+                term += ' #'+service_option;
+            return term;
         }
     }
 }();

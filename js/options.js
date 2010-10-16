@@ -57,22 +57,23 @@ var oMusic = {'artist':'Artist','release':'Release','track':'Track'}
 var oMaemo = {'talk':'Talk','packages':'Packages','wiki':'Wiki',}
 
 var ServiceOptions = function() {
-    var imdb = oImdb;
-    var wikipedia = oWpedia;
-    var amazon = oAmazon;
-    var music = oMusic;
-    var maemo = oMaemo;
-    var web = oLangs;
-    var news = oLangs;
-    var weather = oLangs;
-    var gweb = oGlangs;
-    var gnews = oGeditions;
-    var tlate_from = oGtlate;
-    var tlate_to = oGtlate;
 
     return {
+        imdb:oImdb,
+        wikipedia:oWpedia,
+        amazon:oAmazon,
+        music:oMusic,
+        maemo:oMaemo,
+        web:oLangs,
+        news:oLangs,
+        weather:oLangs,
+        gweb:oGlangs,
+        gnews:oGeditions,
+        tlate_from:oGtlate,
+        tlate_to:oGtlate,
+
         get : function(service, index, short) {
-            lang_list = self[service]
+            lang_list = ServiceOptions[service]
             if( index > -1) {
                 return lang_list[index]
             } else if (short != '') {
