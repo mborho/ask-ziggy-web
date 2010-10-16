@@ -2,7 +2,7 @@
 // GPL - see License.txt for details
 
 Services = {
-        'tlate': {'name':'Translation','active':true},
+        'tlate': {'name':'Translation','active':true,'option_handler':true},
         'weather': {'name':'Weather Forecast','active':true,'option':'Language'},
         'music': {'name':'Yahoo Music','active':true},
         'gnews': {'name':'Google News','active':true,'option':'Edition'},
@@ -37,8 +37,22 @@ var Baas = function() {
 var ServiceForm = function() {
 
     return {
+        tlate_lang: function (key) {
+            var sOptions = ServiceOptions[service+'_'+key];
+            var service_options = $('<select name="sOption" id="sOption_'+key+'">');
+            if(sOptions) {                
+                service_options.append($('<option>').val('').text(key));
+                if(key=='from')
+                    service_options.append($('<option>').val('').text('Auto'));
+                for(o in sOptions) service_options.append($('<option>').val(o).text(sOptions[o]));
+            }
+            return service_options;
+        },
+
         tlate_form: function() {
             var service_form =  $('<form>').append('<input type="text" id="service_input" name="term" value=""/>');
+            service_form.append(ServiceForm.tlate_lang('from'));
+            service_form.append(ServiceForm.tlate_lang('to'));
             service_form.append('<input type="submit" value="go" />');
             service_form.submit(Ziggy.ask_buddy)
             return service_form;
@@ -135,15 +149,33 @@ var Ziggy = function() {
             }
             return false;
         },
+        
+        option_handler_tlate: function(term) {
+            var option = '';
+            var sOptionFrom = $('#sOption_from').val();            
+            if(sOptionFrom) term += ' @'+sOptionFrom;
+            var sOptionTo = $('#sOption_to').val();            
+            if(sOptionTo) term += ' #'+sOptionTo;                        
+            return term;
+        },
+
+        add_options_to_term: function(term) {
+            if(Services[self.service]['option_handler'] == true) {                
+                term = Ziggy['option_handler_'+self.service](term);
+            } else {
+                var sOption = $('#sOption').val();            
+                if(sOption) {
+                    term += ' #'+sOption;
+                } else if($('#sCheckbox').attr('checked')) {            
+                    term += ' #'+$('#sCheckbox').val();
+                }
+            }
+            return term;
+        },
 
         build_term: function () {            
             var term = self.service+':'+$('#service_input').val();
-            var sOption = $('#sOption').val();            
-            if(sOption) {
-                term += ' #'+sOption;
-            } else if($('#sCheckbox').attr('checked')) {            
-                term += ' #'+$('#sCheckbox').val();
-            }
+            term = Ziggy.add_options_to_term(term);
             return term;
         }
     }
