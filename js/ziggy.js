@@ -7,7 +7,7 @@ Services = {
         'music': {'name':'Yahoo Music','active':true},
         'gnews': {'name':'Google News','active':true,'option':'Edition'},
         'gweb': {'name':'Google Search','active':true,'option':'Language'},
-        'deli': {'name':'Delicious.com','active':true},
+        'deli': {'name':'Delicious.com','active':true,'checkbox':['pop','Popular']},
         'metacritic': {'name':'Metacritic.com','active':true},
         'imdb': {'name':'IMDb.com','active':true,'option':'Language'},
         'wikipedia': {'name':'Wikipedia','active':true,'option':'Language'},
@@ -23,7 +23,7 @@ var Baas = function() {
 
         api_call: function(term) {
             console.info(term);
-            var request_url = api_url + encodeURI(term)+'&jsoncallback=?';
+            var request_url = api_url + encodeURIComponent(term)+'&jsoncallback=?';
             $.getJSON(request_url,'{}',
                 function(data){
                     console.info(data);
@@ -48,13 +48,17 @@ var ServiceForm = function() {
             var service_form =  $('<form>').append('<input type="text" id="service_input" name="term" value=""/>');
             var sOptions = ServiceOptions[service];
             if(sOptions) {
-                service_options = $('<select name="sOption" id="sOption">');
+                var service_options = $('<select name="sOption" id="sOption">');
                 // check for a empty default option
                 if(Services[service]['option'] != 'undefined')
                     service_options.append($('<option>').val('').text(Services[service]['option']));
                 for(o in sOptions) service_options.append($('<option>').val(o).text(sOptions[o]));
                 service_form.append(service_options);
-            }
+            } else if(Services[service]['checkbox']) {
+                var checkbox = $('<input type="checkbox" name="sCheckbox" id="sCheckbox" />').val(Services[service]['checkbox'][0]);
+                service_form.append(checkbox);
+                service_form.append('<label for="sCheckbox">'+Services[service]['checkbox'][1]+'</span>');
+            }                
             service_form.append('<input type="submit" value="go" />');
             service_form.submit(Ziggy.ask_buddy)
             return service_form;
@@ -125,16 +129,21 @@ var Ziggy = function() {
 
         ask_buddy: function() {
             $('#service_result').html('<b>suche jetzt</b>');            
-            self.term = Ziggy.build_term();            
-            Baas.api_call(self.term);
+            self.term = Ziggy.build_term();   
+            if(self.term != '') {
+                Baas.api_call(self.term);
+            }
             return false;
         },
 
         build_term: function () {            
             var term = self.service+':'+$('#service_input').val();
-            var service_option = $('#sOption').val();
-            if(service_option)
-                term += ' #'+service_option;
+            var sOption = $('#sOption').val();            
+            if(sOption) {
+                term += ' #'+sOption;
+            } else if($('#sCheckbox').attr('checked')) {            
+                term += ' #'+$('#sCheckbox').val();
+            }
             return term;
         }
     }
