@@ -1,3 +1,5 @@
+// Copyright 2009 Martin Borho <martin@borho.net>
+// GPL - see License.txt for details
 var oLangs = {
 'dk':'Dansk','nl':'Nederlands','en':'English','fi':'Suomi','fr':'Français','de':'Deutsch',
 'it':'Italiano','no':'Norsk','ro':'Română','ru':'Русский','es':'Español','tr':'Türkçe'}
