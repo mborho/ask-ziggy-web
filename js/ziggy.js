@@ -2,17 +2,17 @@
 // GPL - see License.txt for details
 
 Services = {
-        'tlate': {'name':'Translation','active':true,'option_handler':true},
-        'weather': {'name':'Weather Forecast','active':true,'option':'Language'},
-        'music': {'name':'Yahoo Music','active':true},
-        'gnews': {'name':'Google News','active':true,'option':'Edition'},
-        'gweb': {'name':'Google Search','active':true,'option':'Language'},
-        'deli': {'name':'Delicious.com','active':true,'checkbox':['pop','Popular']},
-        'metacritic': {'name':'Metacritic.com','active':true},
-        'imdb': {'name':'IMDb.com','active':true,'option':'Language'},
-        'wikipedia': {'name':'Wikipedia','active':true,'option':'Language'},
-        'amazon': {'name':'Amazon','active':true,'option':'Language'},
-        'maemo': {'name':'Maemo.org','active':true}
+        'tlate': {'name':'Translation','active':true,'option_handler':true,'renderer':'tlate'},
+        'weather': {'name':'Weather Forecast','active':true,'option':'Language','renderer':'weather'},
+        'music': {'name':'Yahoo Music','active':true,'renderer':'music'},
+        'gnews': {'name':'Google News','active':true,'option':'Edition','renderer':'google'},
+        'gweb': {'name':'Google Search','active':true,'option':'Language','renderer':'yql'},
+        'deli': {'name':'Delicious.com','active':true,'checkbox':['pop','Popular'],'renderer':'yql'},
+        'metacritic': {'name':'Metacritic.com','active':true,'renderer':'google'},
+        'imdb': {'name':'IMDb.com','active':true,'option':'Language','renderer':'google'},
+        'wikipedia': {'name':'Wikipedia','active':true,'option':'Language','renderer':'google'},
+        'amazon': {'name':'Amazon','active':true,'option':'Language','renderer':'google'},
+        'maemo': {'name':'Maemo.org','active':true,'renderer':'google'}
 }
 api_url = 'http://wavespeaker.appspot.com/api/query?&term=';
 
@@ -26,7 +26,7 @@ var Baas = function() {
             var request_url = api_url + encodeURIComponent(term)+'&jsoncallback=?';
             $.getJSON(request_url,'{}',
                 function(data){
-                    console.info(data);
+                    Ziggy.render_result(data);
                 }
             );             
         }
@@ -142,7 +142,7 @@ var Ziggy = function() {
         },
 
         ask_buddy: function() {
-            $('#service_result').html('<b>suche jetzt</b>');            
+            $('#service_result').html('');            
             self.term = Ziggy.build_term();   
             if(self.term != '') {
                 Baas.api_call(self.term);
@@ -177,6 +177,48 @@ var Ziggy = function() {
             var term = self.service+':'+$('#service_input').val();
             term = Ziggy.add_options_to_term(term);
             return term;
+        },
+
+        render_tlate: function(data) {
+            content = $('<div>');
+            content.html('tlate');           
+            return content;
+        },
+
+        render_weather: function(data) {
+            content = $('<div>');
+            content.html('weather');           
+            return content;
+        },
+
+        render_music: function(data) {
+            list = $('<ul>');
+            for(res in data) {
+                list.append($('<li>').html(data[res]['title']));
+            }
+            return list;
+        },
+
+        render_yql: function(data) {
+            list = $('<ul>');
+            for(res in data) {
+                list.append($('<li>').html(data[res]['title']));
+            }
+            return list;
+        },
+
+        render_google: function(data) {
+            list = $('<ul>');
+            for(res in data) {
+                list.append($('<li>').html(data[res]['titleNoFormatting']));
+            }
+            return list;
+        },
+
+        render_result: function(data) {
+            console.info(data)
+            $('#service_result').append(Ziggy['render_'+Services[self.service]['renderer']](data));
         }
+
     }
 }();
