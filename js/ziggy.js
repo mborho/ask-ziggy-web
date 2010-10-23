@@ -6,7 +6,7 @@ Services = {
         'weather': {'name':'Weather Forecast','active':true,'option':'Language','renderer':'weather'},
         'music': {'name':'Yahoo Music','active':true,'renderer':'music'},
         'gnews': {'name':'Google News','active':true,'option':'Edition','renderer':'google'},
-        'gweb': {'name':'Google Search','active':true,'option':'Language','renderer':'yql'},
+        'gweb': {'name':'Google Search','active':true,'option':'Language','renderer':'google'},
         'deli': {'name':'Delicious.com','active':true,'checkbox':['pop','Popular'],'renderer':'yql'},
         'metacritic': {'name':'Metacritic.com','active':true,'renderer':'google'},
         'imdb': {'name':'IMDb.com','active':true,'option':'Language','renderer':'google'},
@@ -180,19 +180,28 @@ var Ziggy = function() {
         },
 
         render_tlate: function(data) {
-            content = $('<div>');
-            content.html('tlate');           
+            var content = $('<div>');            
+            content.html('<div>'+data['text']+'</div><div>('+data['detected_lang']+' => '+data['lang']+')</div>');           
             return content;
         },
 
         render_weather: function(data) {
-            content = $('<div>');
-            content.html('weather');           
+            var content = $('<div>');
+            content.append($('<div>'+data['info']['city']+'</div>'))
+            if(data['current']['condition'])
+                content.append($('<div>'+data['current']['condition']+'</div>'))
+            content.append($('<div>'+data['current']['temp_c']+'°C/'+data['current']['temp_f']+'°F</div>'))            
+            content.append($('<div>'+data['current']['humidity']+'<br/>'+data['current']['wind_condition']+'</div><br/>'))            
+            fore = data['forecast'];
+            for(f in fore) {
+                content.append($('<div>'+fore[f]['day_of_week']+': '+fore[f]['condition']+
+                ' ('+fore[f]['low']+'°/'+fore[f]['high']+'°)</div>'))
+            }
             return content;
         },
 
         render_music: function(data) {
-            list = $('<ul>');
+            var list = $('<ul>');
             for(res in data) {
                 list.append($('<li>').html(data[res]['title']));
             }
@@ -200,17 +209,28 @@ var Ziggy = function() {
         },
 
         render_yql: function(data) {
-            list = $('<ul>');
+            var list = $('<ul>');
+            var list = $('<ul>');
             for(res in data) {
-                list.append($('<li>').html(data[res]['title']));
+                var a = $('<a href="'+data[res]['link']+'">'+data[res]['title']+'</a>');
+                var  li = $('<li>').append(a);
+                if(data[res]['content']) li.append($('<div>').html(data[res]['content']));
+                var a_hint =  $('<a href="'+data[res]['link']+'" class="a-hint">'+data[res]['link']+'</a>');
+                li.append($('<div>').append(a_hint));
+                list.append(li);
             }
             return list;
         },
 
         render_google: function(data) {
-            list = $('<ul>');
+            var list = $('<ul>');
             for(res in data) {
-                list.append($('<li>').html(data[res]['titleNoFormatting']));
+                var a = $('<a href="'+data[res]['url']+'">'+data[res]['title']+'</a>');
+                var  li = $('<li>').append(a);
+                li.append($('<div>').html(data[res]['content']));
+                var a_hint =  $('<a href="'+data[res]['url']+'" class="a-hint">'+data[res]['url']+'</a>');
+                li.append($('<div>').append(a_hint));
+                list.append(li);
             }
             return list;
         },
