@@ -1,9 +1,10 @@
 body {
     font-size:24px;
-    background-color:#FFF;
+    background-color:#232329;
+    color:#FFF;
 }
 a {
-    
+    color:#FFF;
 }
 img { 
     border:0
@@ -30,6 +31,7 @@ ul {
     text-overflow:    ellipsis;   /* IE, Safari (WebKit) */
     overflow:hidden;              /* don't show excess chars */
     white-space:nowrap;           /* force single line */
+    color:#757575
 }
 #services, #service {
     width:100%;
