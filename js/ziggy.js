@@ -106,6 +106,11 @@ var Ziggy = function() {
             alert('bal');
         },
 
+        result_link_hint: function(url) {
+            if(url.length > 70)  return url.substring(0,70)+'...';
+            else return url
+        },
+
         build_service_form: function(service) {
             var service_form = ServiceForm.get(service);
             $('#service_form').append(service_form);
@@ -180,42 +185,94 @@ var Ziggy = function() {
         },
 
         render_tlate: function(data) {
-            var content = $('<div>');            
-            content.html('<div>'+data['text']+'</div><div>('+data['detected_lang']+' => '+data['lang']+')</div>');           
+            var content = $('<div id="tlate_res">');            
+            content.html('<div id="tlate_text">'+data['text']+'</div><div>('+data['detected_lang']+' => '+data['lang']+')</div>');           
             return content;
         },
 
         render_weather: function(data) {
-            var content = $('<div>');
-            content.append($('<div>'+data['info']['city']+'</div>'))
+            var content = $('<div id="weather_res">');
+            content.append('<img src="http://google.com'+data['current']['icon']+'" alt="" class="weather_icon" />');
+            content.append('<div>'+data['info']['city']+'</div>');
             if(data['current']['condition'])
                 content.append($('<div>'+data['current']['condition']+'</div>'))
             content.append($('<div>'+data['current']['temp_c']+'°C/'+data['current']['temp_f']+'°F</div>'))            
             content.append($('<div>'+data['current']['humidity']+'<br/>'+data['current']['wind_condition']+'</div><br/>'))            
             fore = data['forecast'];
             for(f in fore) {
-                content.append($('<div>'+fore[f]['day_of_week']+': '+fore[f]['condition']+
-                ' ('+fore[f]['low']+'°/'+fore[f]['high']+'°)</div>'))
+                var fcast = $('<div class="weather_fcast">');
+                fcast.append('<img src="http://google.com'+fore[f]['icon']+'" alt="" />');
+                fcast.append('<span>'+fore[f]['day_of_week']+': '+fore[f]['condition']+
+                ' ('+fore[f]['low']+'°/'+fore[f]['high']+'°)</span>')
+                content.append(fcast);
             }
             return content;
         },
 
         render_music: function(data) {
+            var _extract_hits = function(res) {
+                if(res['name']) return [res];
+                else return res;
+            }
+            var _get_artist = function(row) {
+                if(row['Artist'][0]) return row['Artist'][0];                
+                else return row['Artist'];                
+            }
             var list = $('<ul>');
-            for(res in data) {
-                list.append($('<li>').html(data[res]['title']));
+            if(data['Artist']) {
+                var artists = _extract_hits(data['Artist']);
+                for(a in artists) {
+                    var url = decodeURIComponent(artists[a]['url']);
+                    var a = $('<a href="'+url+'">'+artists[a]['name']+'</a>');
+                    var  li = $('<li>').append(a);
+                    var a_hint =  $('<a href="'+url+'" class="a-hint">'+Ziggy.result_link_hint(url)+'</a>');
+                    li.append($('<div>').append(a_hint));
+                    list.append(li);
+                }            
+            } else if (data['Release']) {
+                var releases = _extract_hits(data['Release']);
+                for( r in releases) {
+                    var url = decodeURIComponent(releases[r]['url']);
+                    var artist = _get_artist(releases[r]);
+                    var title = '"'+releases[r]['title']+'" by '+artist['name'];
+                    var content = 'Year: '+releases[r]['releaseYear']+'<br/>Label: '+releases[r]['label'];                    
+                    var a = $('<a href="'+url+'">'+title+'</a>');
+                    var  li = $('<li>').append(a).append('<div>'+content+'</div>');
+                    var a_hint =  $('<a href="'+url+'" class="a-hint">'+Ziggy.result_link_hint(url)+'</a>');
+                    li.append($('<div>').append(a_hint));                                        
+                    list.append(li);
+                }
+            } else if (data['Track']) {
+                var tracks = _extract_hits(data['Track']);
+                for( t in tracks) {
+                    var url = decodeURIComponent(tracks[t]['url']);
+                    var artist = _get_artist(tracks[t])
+                    var title = '"'+tracks[t]['title']+'" ('+tracks[t]['releaseYear']+') by '+artist['name'];
+                    var content = ''
+                    try {
+                        var album = tracks[t]['Album']['Release'];
+                        if(album['title']) content += 'Album: '+album['title'];
+                        if(album['label']) content += '<br/>Label: '+ album['label'];
+                    } catch(err) {};
+                    var a = $('<a href="'+url+'">'+title+'</a>');
+                    var  li = $('<li>').append(a)
+                    if(content != '') li.append('<div>'+content+'</div>');
+                    var a_hint =  $('<a href="'+url+'" class="a-hint">'+Ziggy.result_link_hint(url)+'</a>');
+                    li.append($('<div>').append(a_hint));                                        
+                    list.append(li);
+                }
             }
             return list;
         },
 
         render_yql: function(data) {
             var list = $('<ul>');
-            var list = $('<ul>');
             for(res in data) {
-                var a = $('<a href="'+data[res]['link']+'">'+data[res]['title']+'</a>');
+                var url = decodeURIComponent(data[res]['link']);
+                var a = $('<a href="'+url+'">'+data[res]['title']+'</a>');
                 var  li = $('<li>').append(a);
                 if(data[res]['content']) li.append($('<div>').html(data[res]['content']));
-                var a_hint =  $('<a href="'+data[res]['link']+'" class="a-hint">'+data[res]['link']+'</a>');
+                var a_hint =  $('<a href="'+url+'" class="a-hint">'+Ziggy.result_link_hint(url)+'</a>');
                 li.append($('<div>').append(a_hint));
                 list.append(li);
             }
@@ -225,10 +282,11 @@ var Ziggy = function() {
         render_google: function(data) {
             var list = $('<ul>');
             for(res in data) {
-                var a = $('<a href="'+data[res]['url']+'">'+data[res]['title']+'</a>');
+                var url = decodeURIComponent(data[res]['url']);
+                var a = $('<a href="'+url+'">'+data[res]['title']+'</a>');
                 var  li = $('<li>').append(a);
-                li.append($('<div>').html(data[res]['content']));
-                var a_hint =  $('<a href="'+data[res]['url']+'" class="a-hint">'+data[res]['url']+'</a>');
+                li.append($('<div>').html(data[res]['content']));            
+                var a_hint =  $('<a href="'+url+'" class="a-hint">'+Ziggy.result_link_hint(url)+'</a>');
                 li.append($('<div>').append(a_hint));
                 list.append(li);
             }
@@ -237,7 +295,8 @@ var Ziggy = function() {
 
         render_result: function(data) {
             console.info(data)
-            $('#service_result').append(Ziggy['render_'+Services[self.service]['renderer']](data));
+            if(data['error']) $('#service_result').text(data['error']);
+             else $('#service_result').append(Ziggy['render_'+Services[self.service]['renderer']](data));
         }
 
     }

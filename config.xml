@@ -2,7 +2,7 @@
 <widget xmlns="http://www.w3.org/ns/widgets"
     id="http://mborho.github.com/ask-ziggy-web/"
     viewmodes="fullscreen windowed">
-    <name>Ask Ziggy</name>
+    <name>Ask Ziggy Web</name>
     <description>Just test it</description>
     <author href="http://www.borho.net/" email="martin@borho.net">Martin Borho</author>
     <license>GNU general Public License Version 3</license>
