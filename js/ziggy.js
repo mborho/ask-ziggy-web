@@ -50,16 +50,16 @@ var ServiceForm = function() {
         },
 
         tlate_form: function() {
-            var service_form =  $('<form>').append('<input type="text" id="service_input" name="term" value=""/>');
+            var service_form =  $('<form id="tlate_form">').append('<textarea id="service_input" style="height:50px;width:60%"></textarea><br/>');
             service_form.append(ServiceForm.tlate_lang('from'));
             service_form.append(ServiceForm.tlate_lang('to'));
-            service_form.append('<input type="submit" value="go" />');
+            service_form.append('<input type="submit"  id="service_submit" value="go" />');
             service_form.submit(Ziggy.ask_buddy)
             return service_form;
         },
 
         search_form: function(service) {            
-            var service_form =  $('<form>').append('<input type="text" id="service_input" name="term" value=""/>');
+            var service_form =  $('<form id="'+service+'_form">').append('<input type="text" id="service_input" name="term" value=""/><br/>');
             var sOptions = ServiceOptions[service];
             if(sOptions) {
                 var service_options = $('<select name="sOption" id="sOption">');
@@ -70,10 +70,13 @@ var ServiceForm = function() {
                 service_form.append(service_options);
             } else if(Services[service]['checkbox']) {
                 var checkbox = $('<input type="checkbox" name="sCheckbox" id="sCheckbox" />').val(Services[service]['checkbox'][0]);
-                service_form.append(checkbox);
-                service_form.append('<label for="sCheckbox">'+Services[service]['checkbox'][1]+'</span>');
+                var label = $('<label for="sCheckbox">'+Services[service]['checkbox'][1]+'</label>');
+                var checker = $('<div id="checker">');
+                checker.append(checkbox);
+                checker.append(label);
+                service_form.append(checker);
             }                
-            service_form.append('<input type="submit" value="go" />');
+            service_form.append('<input type="submit" id="service_submit" value="go" />');
             service_form.submit(Ziggy.ask_buddy)
             return service_form;
         },

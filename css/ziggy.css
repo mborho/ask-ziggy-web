@@ -38,6 +38,51 @@ ul {
 #service .service_name {
     display:inline;
 }
+#service #service_input {
+    height:40px;
+    vertical-align:middle;
+    width:60%;
+    font-size:130%;
+}
+#service #service_submit {
+    height:40px;
+    vertical-align:middle;    
+    width:30%;
+    font-size:130%;
+}
+#service select {
+    height:40px;
+    vertical-align:middle;
+    width:30%;
+    font-size:130%;
+}
+select#sOption_to, select#sOption_from, #tlate_form #service_submit {
+    width:20%;
+}
+#metacritic_form #service_submit {
+    width:60%;
+}
+#deli_form #service_input {
+    width:60%;    
+}
+#deli_form #checker {
+    font-size:130%;
+    width:40%;
+    height:40px;
+    display:inline;
+    margin-right:30px;
+}
+#deli_form #checker #sCheckbox {
+    -webkit-transform: scale(2, 2);
+    vertical-align:middle;
+}
+#deli_form #checker label {
+   vertical-align:middle;
+   margin:5px 10px 0 20px;    
+}
+#deli_form #service_submit {
+    width:30%;
+}
 #tlate_res {
     margin-top:100px;
     margin-left:50px;
