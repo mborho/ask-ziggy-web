@@ -22,7 +22,7 @@ var Baas = function() {
     return {
 
         api_call: function(term) {
-            console.info(term);
+            //console.info(term);
             var request_url = api_url + encodeURIComponent(term)+'&jsoncallback=?';
             $.getJSON(request_url,'{}',
                 function(data){
@@ -301,7 +301,7 @@ var Ziggy = function() {
         },
 
         render_result: function(data) {
-            console.info(data)
+            //console.info(data)
             if(data['error']) $('#service_result').text(data['error']);
              else $('#service_result').append(Ziggy['render_'+Services[self.service]['renderer']](data));
         }
