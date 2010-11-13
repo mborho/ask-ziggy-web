@@ -14,7 +14,7 @@ Services = {
         'amazon': {'name':'Amazon','active':true,'option':'Language','renderer':'google'},
         'maemo': {'name':'Maemo.org','active':true,'renderer':'google'}
 }
-api_url = 'http://wavespeaker.appspot.com/api/query?&term=';
+api_url = 'http://ask-ziggy.appspot.com/api/query?&term=';
 
 
 var Baas = function() {
@@ -50,7 +50,7 @@ var ServiceForm = function() {
         },
 
         tlate_form: function() {
-            var service_form =  $('<form id="tlate_form">').append('<textarea id="service_input" style="height:50px;width:60%"></textarea><br/>');
+            var service_form =  $('<form id="tlate_form">').append('<textarea id="service_input" style="height:50px;width:99%"></textarea><br/>');
             service_form.append(ServiceForm.tlate_lang('from'));
             service_form.append(ServiceForm.tlate_lang('to'));
             service_form.append('<input type="submit"  id="service_submit" value="go" />');
@@ -150,8 +150,8 @@ var Ziggy = function() {
         },
 
         ask_buddy: function() {
-            $('#service_result').html('');            
-            self.term = Ziggy.build_term();   
+            $('#service_result').html('');                  
+            self.term = Ziggy.build_term(); 
             if(self.term != '') {
                 Baas.api_call(self.term);
             }
@@ -181,9 +181,13 @@ var Ziggy = function() {
             return term;
         },
 
-        build_term: function () {            
-            var term = self.service+':'+$('#service_input').val();
-            term = Ziggy.add_options_to_term(term);
+        build_term: function () {       
+            var term = $('#service_input').val();
+            term = jQuery.trim(term);
+            if (term != '') {
+                term = self.service+':'+term;
+                term = Ziggy.add_options_to_term(term);
+            }
             return term;
         },
 
@@ -290,7 +294,7 @@ var Ziggy = function() {
                 var  li = $('<li>').append(a);
                 li.append($('<div>').html(data[res]['content']));            
                 var a_hint =  $('<a href="'+url+'" class="a-hint">'+Ziggy.result_link_hint(url)+'</a>');
-                li.append($('<div>').append(a_hint));
+//                 li.append($('<div>').append(a_hint));
                 list.append(li);
             }
             return list;
