@@ -110,7 +110,7 @@ var Ziggy = function() {
         },
 
         result_link_hint: function(url) {
-            if(url.length > 70)  return url.substring(0,70)+'...';
+            if(url.length > 60)  return url.substring(0,60)+'...';
             else return url
         },
 
@@ -233,7 +233,7 @@ var Ziggy = function() {
                     var a = $('<a href="'+url+'">'+artists[a]['name']+'</a>');
                     var  li = $('<li>').append(a);
                     var a_hint =  $('<a href="'+url+'" class="a-hint">'+Ziggy.result_link_hint(url)+'</a>');
-                    li.append($('<div>').append(a_hint));
+                    li.append($('<div class="a-hint">').append(a_hint));
                     list.append(li);
                 }            
             } else if (data['Release']) {
@@ -245,8 +245,8 @@ var Ziggy = function() {
                     var content = 'Year: '+releases[r]['releaseYear']+'<br/>Label: '+releases[r]['label'];                    
                     var a = $('<a href="'+url+'">'+title+'</a>');
                     var  li = $('<li>').append(a).append('<div>'+content+'</div>');
-                    var a_hint =  $('<a href="'+url+'" class="a-hint">'+Ziggy.result_link_hint(url)+'</a>');
-                    li.append($('<div>').append(a_hint));                                        
+                    var a_hint =  $('<a href="'+url+'">'+Ziggy.result_link_hint(url)+'</a>');
+                    li.append($('<div class="a-hint">').append(a_hint));                                        
                     list.append(li);
                 }
             } else if (data['Track']) {
@@ -264,8 +264,8 @@ var Ziggy = function() {
                     var a = $('<a href="'+url+'">'+title+'</a>');
                     var  li = $('<li>').append(a)
                     if(content != '') li.append('<div>'+content+'</div>');
-                    var a_hint =  $('<a href="'+url+'" class="a-hint">'+Ziggy.result_link_hint(url)+'</a>');
-                    li.append($('<div>').append(a_hint));                                        
+                    var a_hint =  $('<a href="'+url+'">'+Ziggy.result_link_hint(url)+'</a>');
+                    li.append($('<div class="a-hint">').append(a_hint));                                        
                     list.append(li);
                 }
             }
@@ -279,8 +279,8 @@ var Ziggy = function() {
                 var a = $('<a href="'+url+'">'+data[res]['title']+'</a>');
                 var  li = $('<li>').append(a);
                 if(data[res]['content']) li.append($('<div>').html(data[res]['content']));
-                var a_hint =  $('<a href="'+url+'" class="a-hint">'+Ziggy.result_link_hint(url)+'</a>');
-                li.append($('<div>').append(a_hint));
+                var a_hint =  $('<a href="'+url+'">'+Ziggy.result_link_hint(url)+'</a>');
+                li.append($('<div class="a-hint">').append(a_hint));
                 list.append(li);
             }
             return list;
@@ -294,7 +294,7 @@ var Ziggy = function() {
                 var  li = $('<li>').append(a);
                 li.append($('<div>').html(data[res]['content']));            
                 var a_hint =  $('<a href="'+url+'" class="a-hint">'+Ziggy.result_link_hint(url)+'</a>');
-//                 li.append($('<div>').append(a_hint));
+                li.append($('<div class="a-hint">').append(a_hint));
                 list.append(li);
             }
             return list;

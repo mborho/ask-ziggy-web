@@ -28,13 +28,14 @@ ul {
     text-decoration:none;
 }
 #service li a {
-    font-size:32px;
+    font-size:28px;
     text-decoration:none;
 }
-#service li a.a-hint {
-    font-size:24px;
-    -o-text-overflow: ellipsis;   /* Opera */
-    text-overflow:    ellipsis;   /* IE, Safari (WebKit) */
+
+#service li .a-hint {
+    font-size:20px;
+    -o-text-overflow: ellipsis;  
+    text-overflow:    ellipsis;  
     overflow:hidden;              /* don't show excess chars */
     white-space:nowrap;           /* force single line */
     color:#757575
